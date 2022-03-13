@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Unna&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap');
+
+:root {
+    --purple: #ded3ed;
+    --darkerpurple: #494254;
+    --darkergray: #d1d1d1;
+}
+
+html {
+    background: #e6e6e6;
+}
+
+[data-theme='dark'] html {
+    color: #d4d4d4;
+    background: #2e2c2c;
+}
+
+[data-theme='dark'] div.hr {
+  border: 1px solid #454141;
+}
+
+[data-theme='dark'] .description {
+    color: #d4d4d4;
+}
+
+[data-theme='dark'] {
+    color: #d4d4d4;
+    background: #2e2c2c;
+}
+
+::selection {
+    background: var(--purple); 
+}
+
+[data-theme='dark'] ::selection {
+    background: #494254;
+}
+
+.active {
+    background-color: var(--purple)
+}
+
+[data-theme='dark'] .active {
+    background-color: var(--darkerpurple)
+}
+
+[data-theme='dark'] .pages {
+    color: #919191;
+}
