@@ -6,19 +6,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap');
 
+
 :root {
     --purple: #ded3ed;
     --darkerpurple: #494254;
     --darkergray: #d1d1d1;
 }
 
-html {
-    background: #e6e6e6;
+body {
+    background-color: #e6e6e6;
+    transition: 0.2s linear;
 }
 
-[data-theme='dark'] html {
+[data-theme='dark'] body {
     color: #d4d4d4;
-    background: #2e2c2c;
+    background-color: #2e2c2c;
 }
 
 [data-theme='dark'] div.hr {
@@ -27,11 +29,6 @@ html {
 
 [data-theme='dark'] .description {
     color: #d4d4d4;
-}
-
-[data-theme='dark'] {
-    color: #d4d4d4;
-    background: #2e2c2c;
 }
 
 ::selection {

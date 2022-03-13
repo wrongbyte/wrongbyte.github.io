@@ -1,13 +1,10 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Preview from '../components/Preview'
+import type { GetStaticProps } from 'next';
+import type { PostPreview } from '../types/PostPreview';
+import Head from 'next/head';
+import Preview from '../components/Preview';
+import postList from '../lib/getPosts';
 
-const postTitles = [
-  'The complete CSS guide for non-frontend developers',
-  'Explaining base64'
-]
-
-const Home: NextPage = () => {
+const Home = (postList: { posts: [PostPreview] }) => {
   return (
     <>
       <Head>
@@ -16,15 +13,29 @@ const Home: NextPage = () => {
         <link rel="shortcut icon" href="favicon.ico" />
       </Head>
       <section>
-        {postTitles.map((title) => (
+        {postList.posts.map((post) => (
           <Preview
-          key={title}
-          title={title}
+          key={post.title}
+          description={post.description}
+          title={post.title}
+          date={post.date}
           />
         ))}
       </section>
     </>
   )
+}
+
+export const getStaticProps: GetStaticProps = async (context) => {
+  return {
+    props: {
+      posts: postList.map((post) => ({
+        title: post.title,
+        description: post.description,
+        date: post.date.toDateString()
+      }))
+    }
+  }
 }
 
 export default Home

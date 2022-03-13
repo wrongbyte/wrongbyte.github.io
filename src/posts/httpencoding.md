@@ -1,0 +1,51 @@
+---
+
+title: "Como funciona o encoding no protocolo HTTP?"
+description: "Ou: o que acontece com os bytes das requisições HTTP quando você se comunica com alguns servidores?"
+date: 20-01-2022
+
+---
+
+### Antes, um pouco de contexto...
+Quando temos um arquivo grande e precisamos mandá-lo para alguém, o que vem na nossa cabeça de imediato é _“zipar”_ este arquivo.
+
+Quando _zipamos_, isto é, comprimimos um arquivo, o que estamos fazendo na realidade ~~(de forma simplificada, é claro)~~ é aplicar um **algoritmo de compressão** nos seus bytes. O que esses algoritmos fazem é diminuir a redundância da sequência de bytes que compõe o arquivo, utilizando de referências como ponteiros onde ocorrem sequências que já se repetem. 
+
+
+###Mas qual a relação entre esses algoritmos e o protocolo HTTP?
+Imagine que você deseja fazer um GET request para um site, por exemplo para http://example.org.
+No seu browser, você vai ver a seguinte página, interpretada pelo seu browser:
+![Site normal](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/gt3t8q20lvryghcx62m8.png)
+ 
+Contudo, o que você de fato recebe do servidor é uma **enorme stream contendo o código-fonte da página**, após as headers:
+![Código fonte do site](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/wtq2n6c7nngf6taw83ho.png)
+
+Logo transferir o conteúdo de páginas contendo uma quantidade extensa de dados torna-se pouco efetivo, tanto para o cliente quanto para o servidor. **A partir disso, podemos então "zipar" a resposta que recebemos. Ao fazer isso, diminuímos o tamanho da resposta, que vem comprimida, e assim aumentamos a eficiência da comunicação.**
+
+
+
+### Como isso ocorre?
+Normalmente, a resposta é comprimida utilizando-se do algoritmo **gzip**, mas isso vai depender do servidor. 
+Antes da aplicação efetiva do algoritmo de compressão, ocorre a chamada "negociação" entre o browser e o servidor: **o browser envia a header `accept-encoding`** com o algoritmo suportado (exemplo: `Accept-Encoding: gzip`) e **o server responde com a header `content-encoding`** com o algoritmo escolhido.
+![Negociação HTTTP](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/b3zumzo1mutvmyh6z7sp.png)
+Obs: nesse caso, usamos a header `Vary` para armazenar em cache os diferentes valores para o encoding.
+
+Dessa forma, as headers `Accept-Encoding` e `Content-Encoding` vão definir o algoritmo de compressão escolhido para diminuir o tamanho dos arquivos sendo transferidos na comunicação. Isso é de extrema importância para tornar o uso da conexão mais eficiente.
+
+
+### Mas é possível otimizar ainda mais a comunicação através do uso de outra header: `Transfer-Encoding` 
+Quando recebemos a resposta do servidor, recebemos o que é chamado de "payload". Isso é a resposta que pode ser, como já vimos acima, uma página HTML por exemplo.
+![payload](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/x2yrsfwc86m5l6aauyqz.png)
+
+> _Definition of payload : The "actual data" in a packet or file minus all headers attached for transport and minus all descriptive meta-data. In a network packet, headers are appended to the payload for transport and then discarded at their destination._
+
+**Contudo, é possível "dividir" esse payload, e isso ocorre quando utilizamos da header `transfer-encoding`.** Quando essa header não é utilizada, o payload body e message body são iguais.
+ 
+Exemplo da resposta vista antes, porém com transfer-encoding:
+![chunked response](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/bl300b8gih3mv37xjilu.png)
+
+Ou seja, as respostas com transfer-encoding seguem a seguinte estrutura:
+![estrutura](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/7pc1mu71szfb49yb5q9i.png)
+Isso divide as informações recebidas em **chunks**, ou seja, "pedaços" de dados. Isso, além de ajudar a diminuir a carga da comunicação, ajuda o servidor a manter uma conexão mesmo para conteúdos gerados dinamicamente.
+Em muitos servidores, é comum ocorrer a combinação de Content-Encoding: gzip + Transfer-Encoding: chunked, por tornarem a comunicação mais eficiente.
+ 
