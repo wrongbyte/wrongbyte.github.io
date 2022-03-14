@@ -11,7 +11,7 @@
   "dependencies": {
     "@mdx-js/loader": "^2.0.0",
     "autoprefixer": "^10.4.2",
-    "file-system": "^2.2.2",
+    "file-system": "^1.2.2",
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "next": "12.1.0",
