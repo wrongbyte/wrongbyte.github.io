@@ -23,7 +23,7 @@ let postList = fs.readdirSync(postDirectory)
     .map(parsePost)
     .sort(
         (post1, post2) => 
-        (post1.date).getTime() - (post2.date).getTime()
+        (post2.date).getTime() - (post1.date).getTime()
     );
 
 export default postList;

@@ -1,4 +1,5 @@
 import type { GetStaticPaths, GetStaticProps } from 'next';
+import Head from 'next/head';
 import type { PostModel } from "../../types/Post";
 import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
@@ -7,10 +8,17 @@ import { parsePost } from '../../lib/getPosts';
 
 const Post = (props: PostModel) => {
     return (
-        <article>
-            <h1 className="font-title text-3xl text-center mb-4">{props.title}</h1>
-            <MDXRemote {...props.source}/>
-        </article>
+        <>
+            <Head>
+                <title>{props.title}</title>
+                <meta name="description" content="my site" />
+                <link rel="shortcut icon" href="favicon.ico" />
+            </Head>
+            <article>
+                <h1 className="font-title text-3xl text-center mb-4">{props.title}</h1>
+                <MDXRemote {...props.source}/>
+            </article>
+        </>
     );
 }
 
