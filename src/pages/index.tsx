@@ -19,6 +19,7 @@ const Home = (postList: { posts: [PostPreview] }) => {
           description={post.description}
           title={post.title}
           date={post.date}
+          slug={post.slug}
           />
         ))}
       </section>
@@ -32,7 +33,8 @@ export const getStaticProps: GetStaticProps = async (context) => {
       posts: postList.map((post) => ({
         title: post.title,
         description: post.description,
-        date: post.date.toDateString()
+        date: post.date.toDateString(),
+        slug: post.slug
       }))
     }
   }

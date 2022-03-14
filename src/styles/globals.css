@@ -13,6 +13,15 @@
     --darkergray: #d1d1d1;
 }
 
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    max-width: 90%
+}
+
 body {
     background-color: #e6e6e6;
     transition: 0.2s linear;
