@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Image from 'next/image';
 
 export default function About () {
     return(
@@ -11,7 +10,7 @@ export default function About () {
         
         <main className="flex gap-5 md:gap-10 md:mt-10 mt-5 flex-col md:flex-row">
             <div className="self-center">
-                <Image alt='profile picture' className='md:w-full w-36 rounded-full' src='https://pbs.twimg.com/profile_images/1498682094314311687/-DOihTkC_400x400.jpg'/>
+                <img alt='profile picture' className='md:w-full w-36 rounded-full' src='https://pbs.twimg.com/profile_images/1498682094314311687/-DOihTkC_400x400.jpg'/>
             </div>
             <div>
                 <h1 className="font-title text-3xl font-bold">Welcome</h1>
