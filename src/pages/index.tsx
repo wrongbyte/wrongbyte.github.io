@@ -8,7 +8,7 @@ const Home = (postList: { posts: [PostPreview] }) => {
   return (
     <>
       <Head>
-        <title>wb`&apos;`s blog</title>
+        <title>wb's blog</title>
         <meta name="description" content="my site" />
         <link rel="shortcut icon" href="favicon.ico" />
       </Head>

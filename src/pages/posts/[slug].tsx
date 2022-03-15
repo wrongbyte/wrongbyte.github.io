@@ -16,8 +16,10 @@ const Post = (props: PostModel) => {
             </Head>
             <article>
                 <h1 className="font-title text-3xl text-center mb-4">{props.title}</h1>
+                <p className="text-gray-500 mb-1">{props.date}</p>
                 <MDXRemote {...props.source}/>
             </article>
+            <div className="py-4"><div className="w-full border-t hr border-gray-300 mt-3"></div></div>
         </>
     );
 }
