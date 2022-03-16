@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@mdx-js/loader": "^2.0.0",
+    "@next/mdx": "^12.1.0",
     "autoprefixer": "^10.4.2",
     "file-system": "^1.2.2",
     "fs": "^0.0.1-security",

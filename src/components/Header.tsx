@@ -17,9 +17,9 @@ export default function Header() {
                 <Link href='/about'>
                     <a className={`${pathname === '/about' && 'active'}`}>about</a>
                 </Link>
-                <Link href='/'>
+                {/* <Link href='/'> */}
                     <a className={`${pathname === '/writeups' && 'active'}`}>writeups</a>
-                </Link>
+                {/* </Link> */}
                 <Link href='https://github.com/wrongbyte'>
                     <a className='inline'>github</a>
                 </Link>

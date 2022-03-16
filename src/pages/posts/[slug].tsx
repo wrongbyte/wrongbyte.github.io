@@ -5,6 +5,7 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 import postList from '../../lib/getPosts';
 import { parsePost } from '../../lib/getPosts';
+import { components } from '../../components/MDXComponents';
 
 const Post = (props: PostModel) => {
     return (
@@ -17,7 +18,7 @@ const Post = (props: PostModel) => {
             <article>
                 <h1 className="font-title text-3xl text-center mb-4">{props.title}</h1>
                 <p className="text-gray-500 mb-1">{props.date}</p>
-                <MDXRemote {...props.source}/>
+                <MDXRemote {...props.source} components={components}/>
             </article>
             <div className="py-4"><div className="w-full border-t hr border-gray-300 mt-3"></div></div>
         </>

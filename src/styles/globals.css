@@ -2,15 +2,30 @@
 @tailwind components;
 @tailwind utilities;
 
+
 @import url('https://fonts.googleapis.com/css2?family=Unna&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Old+Standard+TT&display=swap');
 
 
 :root {
-    --purple: #ded3ed;
+    --purple: #dbd3e6;
     --darkerpurple: #494254;
     --darkergray: #d1d1d1;
+}
+
+code {
+    background: var(--purple);
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
+}
+
+[data-theme='dark'] code {
+    background: var(--darkerpurple);
+    border-radius: 5px;
+    padding: 2px;
+    margin: 2px;
 }
 
 img {
