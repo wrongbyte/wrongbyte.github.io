@@ -15,7 +15,7 @@ export default function About () {
             <div>
                 <h1 className="font-title text-3xl font-bold">Welcome</h1>
                 <p className="description text-gray-500">
-                    Hello! I am a junior looking for learning more about computer science in general.
+                    Hello! I am a junior web developer looking for learning more about computer science in general.
                     <br/>
                     I am primarily interested in backend and the several existing paradigms and languages available to make useful tools. My current technologies include languages such as <span className="active">Javascript, Typescript and Python</span>, along with libraries like <span className="active">React</span> and databases such as <span className="active">MySQL, PostgreSQL and MongoDB.</span>
                     <br/>
