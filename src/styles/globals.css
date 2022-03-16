@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    h2 {
+      @apply text-3xl;
+      font-weight: 800;
+    }
+    h3 {
+      @apply text-2xl;
+      font-weight: 600;
+      line-height: 2;
+    }
+}
 
 @import url('https://fonts.googleapis.com/css2?family=Unna&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Scope+One&display=swap');
@@ -13,6 +24,8 @@
     --darkerpurple: #494254;
     --darkergray: #d1d1d1;
 }
+
+/* MARKDOWN COMPONENTS */
 
 code {
     background: var(--purple);
@@ -27,6 +40,7 @@ code {
     padding: 2px;
     margin: 2px;
 }
+/*  */
 
 img {
     display: block;
