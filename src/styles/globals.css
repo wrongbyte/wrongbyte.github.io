@@ -25,24 +25,21 @@
     --darkergray: #d1d1d1;
 }
 
-/* MARKDOWN COMPONENTS */
-
-code {
+.code {
     background: var(--purple);
     border-radius: 5px;
     padding: 2px;
     margin: 2px;
 }
 
-[data-theme='dark'] code {
+[data-theme='dark'] .code {
     background: var(--darkerpurple);
     border-radius: 5px;
     padding: 2px;
     margin: 2px;
 }
-/*  */
 
-img {
+img, .codeBlock {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -50,6 +47,7 @@ img {
     margin-bottom: 2em;
     max-width: 90%
 }
+
 
 body {
     background-color: #e6e6e6;
