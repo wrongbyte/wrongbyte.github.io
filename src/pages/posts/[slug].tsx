@@ -8,7 +8,7 @@ import { parsePost } from '../../lib/getPosts';
 import { Code } from '../../components/Code';
 
 const components = {
-    code: Code as any
+    code: Code
 }
 
 const Post = (props: PostModel) => {

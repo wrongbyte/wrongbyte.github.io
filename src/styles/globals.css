@@ -5,7 +5,7 @@
 @layer base {
     h2 {
       @apply text-3xl;
-      font-weight: 800;
+      font-weight: 600;
     }
     h3 {
       @apply text-2xl;
@@ -76,7 +76,8 @@ body {
 }
 
 .active {
-    background-color: var(--purple)
+    background-color: var(--purple);
+    border-radius: 2px;
 }
 
 [data-theme='dark'] .active {
