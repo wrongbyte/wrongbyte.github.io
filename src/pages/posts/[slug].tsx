@@ -5,10 +5,11 @@ import { serialize } from 'next-mdx-remote/serialize';
 import { MDXRemote } from 'next-mdx-remote';
 import postList from '../../lib/getPosts';
 import { parsePost } from '../../lib/getPosts';
-import { Code } from '../../components/Code';
+import { Code, A } from '../../components/MDXComponents';
 
 const components = {
-    code: Code
+    code: Code,
+    a: A
 }
 
 const Post = (props: PostModel) => {

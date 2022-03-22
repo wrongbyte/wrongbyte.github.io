@@ -39,6 +39,16 @@
     margin: 2px;
 }
 
+[data-theme='dark'] .article-link {
+    color: #c1b6d1;
+    font-weight: 600;
+}
+
+.article-link {
+    color: var(--darkerpurple);
+    font-weight: 600;
+}
+
 img, .codeBlock {
     display: block;
     margin-left: auto;
