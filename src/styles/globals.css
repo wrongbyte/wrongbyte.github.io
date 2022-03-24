@@ -6,11 +6,13 @@
     h2 {
       @apply text-3xl;
       font-weight: 600;
+      margin-bottom: 10px;
     }
     h3 {
       @apply text-2xl;
       font-weight: 600;
       line-height: 2;
+      margin-bottom: 5px;
     }
 }
 

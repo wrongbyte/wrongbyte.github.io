@@ -1,0 +1,325 @@
+---
+
+title: "The basic CSS guide for non-frontend developers"
+description: "Because you don't need to have a PhD in CSS to know how to center a div"
+date: 23-03-2022
+
+---
+
+**This post is not intended to be a kind of cheat sheet; I'm not going to cover *every existing CSS property*.** My intention here, on the other hand, is to present some useful CSS properties in a holistic way, showing how they can be used together and the logic behind them.
+
+I'm not a experienced front-end developer though, so if something here seems a bit strange or confusing, I encourage you to look up on other resources. I hope this post is useful.
+
+### Box-model
+This one is the basics that you probably already know. 
+Every single element in a page is nothing but a box containing these properties you see below:
+![box-model](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aoa1pyiiz5gl11dz5n87.png)
+
+**Although important**, I feel that most struggles people have have nothing to do with the box model itself, but with positioning **each element in relation to each other.** So, I will skip box-model for now; even though we'll see a bit of it later.
+<br/>
+
+
+## Part 1 - Display: inline, block, inline-block
+We know that elements are built just like blocks in a page. However, are all elements equal when it comes to displaying them in your document? 
+
+**The answer is no**: they can be displayed occupying all the space around them or inside another block element, depending on the *default* value of their `display` property.
+
+Let's see.
+![lorem ipsum p](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/w0un7deubl35ru51c5b0.png)
+Let's say we have a very basic `p` tag containing some text. To write another paragraph, we would have to add another `p` tag as follows:
+![two p](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/3y3kr0k92nt4cynlttoe.png)
+
+### `display: block`
+By default, p is an element whose `display` property is set to `block`. The meaning of it is exactly what you saw above: **block elements occupy all the width where they are positioned.** That's why we cannot have two p elements side-by-side, without changing their `display` property.
+<br/>
+
+### `display: inline`
+Let's say we've decided that our *lorem ipsum* text looks boring without some colors. So, we need to change some stuff inside of p, which is a block element. How to do it?
+
+The answer is: `display: inline`. Therefore, in this case, the best element we could use - that is `inline` by default - is `<span>`.
+
+![highlight](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/6rm161orqjqavcldiqbo.png)
+
+Our HTML now looks like this:
+```html
+<p>"<span class="highlight">Lorem ipsum dolor sit amet</span>
+,consectetur adipiscing elit, sed do [...]</p>
+```
+
+### Basic differences between inline and block
+The width of your `block` elements will not adjust to the content inside them; whereas it will happen with `inline` elements.
+In fact, *"how to make my div adjust its width to the content inside"* is a common question when it comes to CSS, and its answer is often setting the display property to `inline-block` *(which will have characteristics of both `inline` and `block`)*. Look at the answers of [this question](https://stackoverflow.com/questions/450903/how-can-i-make-a-div-not-larger-than-its-contents) in Stack Overflow.
+![diff inline-block and block](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/67ebopec0j23p50nxrg7.png)
+ 
+Another difference that is worth noting is that block elements have top and bottom margins (remember the box model). That's visible in the image above.
+
+### But why do these differences even exist?
+A key concept to keep in mind is that *block* elements are intended to be used as "wrappers" of sections in your page. That's precisely why elements such as **`<main>, <header>, <article>, <footer>, <div>`**, etc are block elements by default. They are supposed to have content inside them; therefore they start a new line and take up the full width available. *They are just like drawers*.
+
+On the other hand, *`inline` elements are like the items inside the drawer*. Therefore, they occupy only as much width as necessary and are intended to be used inside block elements. It's easy to position they side-by-side.
+Some elements that are inline by default are **`<a>, <button>, <textarea>, <label>, <select>`**.
+<br/>
+
+![drawer analogy](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/arzdjum160ol2ss0xbep.png)
+ 
+<br/>
+**Side note: `grid` and `flex` are other important values for display, but we'll skip it for now, because a section of this post we'll be dedicated exclusively to grid and flexbox.**
+<br/>
+
+
+
+Let's add some colors to these paragraphs, first wrapping them in a div.
+### HTML
+```html
+      <div class="wrapper">
+          <div class="yellow-div">
+            <p>"<span class="highlight">Lorem ipsum dolor sit amet</span>, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</p>
+          </div>
+
+          <div class="blue-div">
+            <p>"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."</p>
+          </div>    
+```
+
+### CSS
+```css
+.yellow-div {
+    background-color: yellow
+}
+
+.blue-div {
+    background-color: blue
+}
+
+.wrapper {
+    width: 800px
+}
+```
+
+Now our paragraphs look like this:
+![800 pixels](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/m3olac85kec1jsmr4wzz.png)
+
+Our div now has a width of 800 pixels. But now we face our first problem: **what if the width of our screen is less than 800 pixels**?
+
+<br/>
+
+## Part 2 - CSS Units
+If we wanted that our div had always *half the width of the page*, it would be a headache to define its value in pixels. That's what would happen with our example: there are a lot of screens that are less than 800 pixels wide. But pixels are only the tip of the iceberg.
+### Relative lengths
+Pixels and centimeters are pretty self-explanatory. They are absolute, fixed length units and do not change in spite of other characteristics.
+However, due to their static nature, **when dealing with responsive layouts, they are not always the best option.** That's why I will focus here on **relative units**.
+### `em`
+`em` is equivalent to the font-size of parent div. It means that, for example, if the font-size of elements inside *yellow-div* is set to 14px, then **inside yellow-div**, 1em is equal to 14px, 1.2em is equal to 16.8px and so on.
+
+### `rem`
+This unit is similar to `em`, but in this case we take for reference the font size of the root element (often `<html>`). So, differently from the example above, we would not use the font-size of only yellow-div. If the font-size of the page is 18px, then 1rem would be equal to 18px **in all elements of our HTML**.
+
+### `vh` and `vw`
+These are my favorite units for responsive layout. `vh` stands for viewport height and `vw` stands for viewport width. They represent either 1% of width or height of page - **and they resize accordingly to the viewport size**. That's very useful when you want, for example, a div that occupies half the page **both in mobile and desktop screens**.
+<br/>
+
+So, what about resizing our div to have 50% of the width of our page, despite of the screen size? Let's do it:
+```css
+.wrapper {
+    width: 50vw;
+}
+```
+![50vw](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2qvzdbivitnrehn8cc3o.png)
+
+Look how the proportion is kept in smaller screens:
+![50vw mobile](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/1kbjibztbb4h5ul4dd3l.png)
+
+<br/>
+Looks nice for now. But it could be better if our div was centered horizontally. How to do it?
+
+<br/>
+## Part 3 - centering stuff with CSS; an introduction
+We are back to the question that opened this post - *how to center a div?*
+
+The answer for this question varies a lot, actually. But we are going to start with the basics, first with two questions:
+
+**1 - Where is the element that you want to center?**
+
+**2 - What's the reference you are going to use to center it?**
+
+The first question is very important at this point, because out HTML has only a div with two paragraphs inside. It's different from a column in a blog template or some design alike. So, our element is floating alone in a HTML document and we are going to center it relative to our viewport.
+
+**This case is not the most common; you are probably going to need to center your elements inside of other elements, and therefore the solution would be different. But for now, let's stick with it.**
+
+```css
+.wrapper {
+    width: 50vw;
+    margin: 0 auto;
+}
+```
+
+By simply adding `margin: 0 auto`, we are able to center our div in this case.
+![margin 0 auto](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/pdjvuqcjh3pnit5ne5u5.png)
+It is responsive as well:
+![margin 0 auto mobile](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q1a1jmqnogche3vw8uqf.png)
+
+### Back to box-model: why the solution above works
+Defining `margin: 0 auto` does precisely two things: it sets the element's vertical margins to zero and lets the browser decide the horizontal margins - that will be equal in both sides. Of course, the values for the child element will be calculated relative to its parent element - and as we only have this div, the parent element is `<body>` and so we are able to center it absolutelly.
+<br/>
+However, using margins to center elements only works if:
+
+**1 - The element has a defined width**
+
+**2 - The element is `block` (because we cannot define width for inline elements)**
+
+So, as you see, this approach is useful - but only for very specific cases.
+<br/>
+**Side note: margin auto only works for centering things horizontally. It does not work on vertical axis the same way, look at the answers of [this question](https://stackoverflow.com/questions/34552116/why-doesnt-margin-auto-center-an-element-vertically)**.
+
+And so we get to another question: how to center stuff vertically, if we cannot use `margin`?
+There are plenty of answers to this question. And to answer them, it's time to use another CSS property.
+
+
+<br/>
+## Part 4 - `position`
+Here things start to get interesting.
+In the previous example, let's say that we want to center our div vertically, taking for reference the browser window.
+
+Even though there are other ways to achieve it, we are going to use `position` here.
+Let's start with the most useful cases: **`absolute`** and **`relative`**.
+
+They set how the element should be positioned **relative to**:
+
+**1 - Its default position in the HTML document - `position: relative`**
+
+**2 - Its parent element - `position: absolute`**
+<br/>
+When you set position, you can define `top`, `right`, `bottom` and `left` properties, that will define the element's final position in the page layout.
+
+<br/>
+### What's the difference between them?
+In simple words, `absolute` takes for reference the ancestor element and `relative` takes for reference the *default position* that the element would occupy in the page, if position is not set (normal flow). Look at the previous image and observe how elements are positioned. Relative will take for reference exactly these positions.
+<br/>
+### `absolute` is kinda tricky
+When we say *takes for reference the ancestor element*, what **exactly** it means?
+
+Basically, the reference for a absolute-positioned element is its **nearest positioned element**, what is, **the nearest element whose position is different from static (the default value).**
+
+When we don't have this positioned element, though, the reference used will be the root element (`<html>`). Let's see it in practice:
+
+### *Questionably* centering with position
+
+So, we want our div to be centered vertically in terms of the browser window. If we use the root element for reference, `absolute` would be the right choice, right? To test it, we are going to use the same logic of applying 50vh.
+
+```css
+.wrapper {
+    width: 50vw;
+    margin: 0 auto;
+    position: absolute;
+    bottom: 50vh;
+}
+```
+
+But look what happens:
+![position bug](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/tw25ml8orgyyokxxw4ne.png)
+
+Now our layout is broken because our element's margins are being ignored.
+
+In fact, *that's precisely what is intended to happen*. When you use the absolute positioning, **your element is removed from the document flow, what means that its *box is ignored*.**
+![outside window](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/qrcgjd1mlv6hh2db8evv.png)
+
+The margins are still there, but they have no effect now that our element is not part of the layout anymore.
+<br/>
+
+But we still want our div to be part of the layout. So, let's use `position: relative` instead.
+
+To do so, we can't use `50vh` as our distance from the bottom, because now our reference is not the distance from the bottom of browser window anymore, but **the default position of the element**. So, setting `bottom: 50vh` with position relative would make our element disappear from the page.
+
+Then, we can use the distance from top to do it. *However, this distance certainly is not 50vh anymore.*
+Why? Because **it's not 50vh from top of page, but 50vh from where the element should normally be.**
+
+A way around this problem is to define the position value to `50vh - half the height`. If the div has a height of 200px, our CSS now looks like:
+```css
+.wrapper {
+    height: 200px;
+    width: 50vw;
+    margin: 0 auto;
+    position: relative;
+    top: calc(50vh - 100px);
+}
+```
+
+And our div is now vertically centered.
+<br/>
+
+### An important property: `absolute` inside `relative`
+
+It would be nice if we could position one element in terms of its parent div just like the drawer analogy, right? In fact, this is possible combining absolute and relative elements.
+
+![absolute relative](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/aoy8q2tdr81q86qsm00y.png)
+
+It happens exactly because `absolute` (the yellow div, in this case) takes for reference the closest positioned element. And this element, here, is our `wrapper` div.
+
+Look how we can define the properties above:
+```css
+.yellow-div {
+    position: absolute;
+    right: 0;
+    height: 100px;
+    width: 100px;
+    background-color: yellow
+}
+```
+
+Now, `right: 0` positions the yellow-div in terms of its parent div.
+
+**Important: there are other values for position. I will not cover them here, but I encourage you to research a bit about them.**
+
+<br/>
+## Part 5 - back to `display`: flexbox and grid
+The first part of this post introduced `inline` and `block`.
+
+Now, it's time to see the *pinnacle of layout*: flexbox and grid.
+<br/>
+Flex and grid are `display` values that, when applied to an element, allow you to organize the elements inside it as you want. You can organize them in rows, columns, or in personalized areas.
+<br/>
+
+**A little disclaimer: I will not describe their utilities in detail because it's probably out of the scope of this post; but I will list the recommended resources to learn each one.**
+<br/>
+### Differences between them
+
+In most cases, their usage overlap and choosing between one or another is more of a personal choice.
+
+**But observe the two layouts below:**
+![different layouts](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/a5zitas2srkajvhfzg5i.png)
+
+### `grid` - take a brick and divide it
+
+In the first layout, we have the content splitted in several sections. One example of it would be a blog page, where each section have a purpose - one of them may wrap the blog posts, another may show the recent posts, author information and so on. 
+
+With grid, you can easily define what's called *grid areas*. **It makes `grid` very powerful when you want to divide your content in independent, heterogeneous elements.** I like to think as grid being a way to divide your content in blocks and straightforwardly personalize their structure. Simply put, it's a method to draw a block and divide it in any way you want, by cutting it into lines.
+<br/>
+**To learn it in practice, play all the phases of [this game](https://codingfantasy.com/games/css-grid-attack) and try to create/replicate a layout of your choice using what you understood.**
+<br/>
+
+### `flex`- organize your items like on a shelf
+
+![Image description](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/5auhnzfxcyi3g8di6h35.png)
+
+The second layout presents more homogeneous elements.
+
+The logic of flexbox is a bit different from grid: you can imagine the wrapper div with `display: flex` being a shelf whose children elements are the items on it. 
+
+For this reason, `flex` is a good choice when you want to organize similar items - **like the buttons in a navbar, the images of a gallery, homogeneous content in general**. Some properties of flex allow you to choose the order in which the items appear and if they are displayed in rows on in columns. `flex` also presents the easiest way to center vertically and horizontally the contents of a div:
+```css
+.random-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+```
+
+**To learn it, the strategy is the same as with grid, play [this game instead](https://codingfantasy.com/games/flexboxadventure/play) and try to create/replicate a layout of your choice using what you understood.**
+
+<br/>
+### After all, how to master CSS?
+
+Personally, I believe that the only answer to this question is to create different front-end projects and **practice**. Nowadays, it's rare to use pure CSS as you have bootstrap, tailwind and many other frameworks - for example, I used tailwind for this blog!
+But using frameworks does not mean that knowing pure CSS is useless. After all, to decide which class to apply to an element, you first have to understand the document flow and what exactly you intend to do.
+
+Frameworks are just a way to prevent you to reinvent the wheel every single day, but they don't write the entire layout for you - you'll eventually need to fix the wheel when it breaks anyway.
