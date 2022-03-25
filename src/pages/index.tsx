@@ -10,7 +10,6 @@ const Home = (postList: { posts: [PostPreview] }) => {
       <Head>
         <title>wb&#39;s blog</title>
         <meta name="description" content="my site" />
-        <link rel="shortcut icon" href="favicon.ico" />
       </Head>
       <section>
         {postList.posts.map((post) => (
