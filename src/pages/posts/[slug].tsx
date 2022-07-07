@@ -18,17 +18,15 @@ const Post = (props: PostModel) => {
             <Head>
                 <title>{props.title}</title>
                 <meta name="description" content="my site" />
-                <link rel="shortcut icon" href="favicon.ico" />
-                <meta
-                    property="og:title"
-                    content={props.title}
-                />
-                <meta name="twitter:card" content="summary" />
-                <meta
-                    property="og:description"
-                    content={props.description}
-                />
-                <meta property="og:image" content="https://pbs.twimg.com/media/FMfaMdVUYAAtgp2?format=jpg&name=large" />
+                <link rel="icon" href="favicon.ico"/>
+                <link rel="shortcut icon" href="favicon.ico"/>
+                <meta property="og:title" content={props.title}/>
+                <meta property="og:description" content={props.description}/>
+                <meta property="og:image" content="https://pbs.twimg.com/media/FMfaMdVUYAAtgp2?format=jpg&name=large"/>
+                <meta name="twitter:card" content={props.description}/>
+                <meta name="twitter:title" content={props.title}/>
+                <meta name="twitter:description" content={props.description}/>
+                <meta name="twitter:image" content="https://pbs.twimg.com/media/FMfaMdVUYAAtgp2?format=jpg&name=large"/>
             </Head>
             
             <article>
