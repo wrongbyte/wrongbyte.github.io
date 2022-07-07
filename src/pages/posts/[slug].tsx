@@ -19,6 +19,16 @@ const Post = (props: PostModel) => {
                 <title>{props.title}</title>
                 <meta name="description" content="my site" />
                 <link rel="shortcut icon" href="favicon.ico" />
+                <meta
+                    property="og:title"
+                    content={props.title}
+                />
+                <meta name="twitter:card" content="summary" />
+                <meta
+                    property="og:description"
+                    content={props.description}
+                />
+                <meta property="og:image" content="https://pbs.twimg.com/media/FMfaMdVUYAAtgp2?format=jpg&name=large" />
             </Head>
             
             <article>
