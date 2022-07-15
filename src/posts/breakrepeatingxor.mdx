@@ -1,0 +1,187 @@
+---
+
+title: "Cryptography basics: breaking repeated-key XOR ciphertext"
+description: "a (kind of) nice introduction to cryptography"
+date: 05-07-2022
+
+---
+
+In this post, we are going to learn a bit of what is the XOR encryption algorithm and how to decipher it through Friedman Test using Hamming Distance and Frequency Analysis.
+
+### First of all, what exactly is a XOR cipher?
+If you ever studied bitwise operators, you have already heard of _exclusive or_, or simply XOR.
+It takes two inputs and returns 1 if these inputs are different.
+![xor truth table](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/j6iqp9pb4z712uc51ksc.png)
+
+But the interesting part is that this simple operation, that happens in the bits level, is very useful for **composing cryptographic keys.** That's what we'll see in this post, using a bit of Python and the problem presented in the 6th challenge of Cryptopals (set 1)
+
+### How can we use XOR as a method of encryption? In fact, what is a cryptographic cipher?
+To answer this question, let's think in terms of functions. Encrypting a message is taking its plaintext (or, more precisely, its _bytes_), and generating an appearing random output with the help of an _encryption algorithm_. **This algorithm defines the pattern we'll follow when replacing the original content with the encrypted one.**
+For example, the Caesar cipher replaces a letter with its corresponding following letter, such that "ABC" becomes "BCD". This pattern goes through the whole message. 
+But the Caesar cipher can skip more than one letter - what matters here is the logic of substitution. In this way, the **XOR cipher is very similar.**
+
+### Bytes, ASCII and single-byte XOR
+Before introducing the encryption with a repeating cipher, let's first understand how a single-byte encryption would be done.
+The encryption with a single-byte XOR cipher is made when we use the XOR operation to change the value of each byte; we make this operation in the whole text using a key - that is the constant value which we are going to use to do this operation.
+
+```python
+binary_string = b"hello"
+for byte in binary_string:
+   print(byte ^ 100)
+```
+The outputs will be `12, 1, 8, 8` and `11`.
+It happens because each letter in a binary string can be represented by a binary number that, XORed against 100 (the key here), returns a different byte. This number could be any value within the range [0, 255].
+Therefore, here `100` acts as our key - we would need to know this value to perform the decryption of the message. **Using a XOR cipher is a symmetric encryption method, what means that we need the same key both to encrypt and decrypt a message**. It happens because XOR is an involutory function - it's its own inverse, so to decrypt a message we would need to simply XOR its bytes against the key again.
+![xor explained](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/rgl2ug8cbr2uzzsag85c.png) 
+So, we already have a substitution cipher similar in terms of Caesar cipher, _but a bit more sophisticated._
+
+_**Side note 1:** it turns out that not all XORed bytes will be printable, since they can be outside the ASCII range. In this case, we can make a conversion to base64, for example, to print them. See [(in Portuguese)](https://dev.to/wrongbyte/como-funciona-a-codificacao-em-base64-2njd)_.
+_**Side note 2:** the article above can also be helpful to help you understand how things work with ASCII characters in byte-level_.
+
+### Repeating XOR cipher
+It turns out that encrypting something with a single-byte key would be a very weak encryption method. To break it, we would only need to know which key was used - which could be achieved by bruteforcing all the 256 possible values. Then, we could look at the outputs of these operations and choose the one that is more "English-like", by assign scores to each output, based on the most frequent letters across the English language.
+
+**PS: remember this function, we are going to see it later again!**
+```python
+# Breaking a single-byte XOR cipher: we perform a XOR operation
+# in the string using all possible values for the key.
+# The key used to generate the output closer to English is what we are searching for.
+def assign_score(output_string):
+    string_score = 0
+    freq = [' ', 'e', 't', 'a', 'o', 'i', 'n', 's', 'h', 'r', 'd', 'l', 'u']
+    for letter in output_string:
+        if letter in freq:
+            string_score += 1
+    return string_score
+
+def XOR_decode_bytes(encoded_array):
+    last_score = 0
+    greatest_score = 0
+    for n in range(256): # checks for every possible value for XOR key
+        xord_str = [byte ^ n for byte in encoded_array]
+        xord_ascii = ('').join([chr(b) for b in xord_str])
+        last_score = assign_score(xord_ascii)
+        if (last_score > greatest_score):
+            greatest_score = last_score
+            key = n
+    return key
+```
+
+So, we can make it harder to break by simply creating a longer key - with more bytes and that repeats itself across the text.
+It would require us two steps to break: first, we would need to know the length of the key, and then we would need to know the key itself - which means testing each possible value for each one of the key's characters. A bit more complicated, right?
+
+So, let's understand how to encrypt a text using a XOR repeating key first.
+
+### Repeating key: encryption
+```python
+input_text1 = b"Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+XOR_key = b"ICE"
+
+def XOR_repeating_encode(input_string: bytes, key: bytes) -> bytes:
+    xord_output = []
+    print(input_string)
+    for i in range(len(input_string)):
+        xord_output.append(input_string[i] ^ key[i % len(key)])
+
+    return bytes(xord_output)
+```
+The logic here is pretty the same we used for the single-byte key. In short, we perform a XOR operation against each of the characters of the key, which is `ICE` here. So, "B" is XORed against "I", "u" against "C" and "r" against "E", and so forth until we reach the end of the text. Getting the plaintext back is achieved through the same process.
+
+### But what if we wanted to recover the plaintext without knowing the key?
+Here things start to get interesting. Let's see how to break a repeated-key XOR ciphertext!
+
+### 1 - The key's length: Hamming distance
+How far is "a" from "d"?
+You may say that they are a few letters apart in the alphabet. But there's another interesting way to measure their "distance": how many different bits they have - which is their **Hamming distance**.
+So, lowercase a is 95 in the ASCII table, and lowercase d is 100. Their binary representations are `1011111` and `1100100`. They have 5 different bits, so **their hamming distance is 5**.
+You can measure this distance across phrases, too - the process is the same, you only sum the result from each pair of characters.
+
+### What this measure has to do with the repeating XOR cipher?
+The average Hamming distance between two bytes picked at random is around `4.0`, while that of any two lowercased ASCII alphabet - whose values range from 97 to 122 - is `2.5`.
+So it means that the hamming distance between the characters of a plaintext will be much lower than that from a bunch of random bytes - and this information is very useful when we get to test the possible outputs for a variety of possible key lengths.
+
+Let's understand it better.
+
+```python
+def hamming_distance(string1: bytes, string2: bytes) -> int:
+    distance = 0
+    for (byte1, byte2) in zip(string1, string2):
+        distance += bin(byte1 ^ byte2).count('1')
+    return distance
+```
+Checking the different bits of two strings is basically the same as performing an XOR operation on them and counting the 1's, so the function above does exactly this. 
+Alright. We now have a way to score a string to know the distance between its bytes. How can we use it now?
+
+In this challenge, the range of the size of possible keys is within the interval [2, 40]. Therefore, we will have to do the following steps:
+**1) Divide our text into different chunk sizes, ranging from 2 to 40.
+2) On each iteration - for each chunk size chosen - we will check the hamming score between the chunks.
+3) The length of chunks with the lower average hamming distance corresponds to the key's length.**
+
+This technique works because, once we get the right size for the key, the chunks will be just XORed plaintext. Therefore, their hamming distance will be way lower than if they were random bytes. 
+```python
+def find_key_length():
+     # we are searching for the length that produces an output with the lowest hamming score
+     min_score = len(text)
+
+     for keysize in range(2, 40):
+        chunks = [text[start:start + keysize] for start in range(0, len(text), keysize)]
+        subgroup = chunks[:4]
+        # getting the average hamming distance per byte
+        average_score = (sum(hamming_distance(a, b) for a,b in combinations(subgroup, 2)) / 6) / keysize
+        if average_score < min_score:
+            min_score = average_score
+            key_length = keysize
+
+    return key_length
+```
+In the code above, the logic is as it follows:
+Let's say that we are guessing that the key is 4 characters long. If we had the following text:
+```python
+text = "YWJjZGVmZ2hpamtsbW4="
+```
+We would divide it in several chunks with four letters each:
+```python
+chunks = ['YWJj', 'ZGVm', 'Z2hp', 'amts', 'bW4=']
+```
+Now, if we take the first four chunks, we are able to measure the average hamming distance between them:
+```python
+# keysize here is equal to 4 and subgroup is the first four chunks
+# dividing the score by 6 gives us the average diff between chunks, dividing it by keysize gives us the average diff between each a, b bytes for chunk1, chunk2
+average_score = (sum(hamming_distance(a, b) for a,b in combinations(subgroup, 2)) / 6) / keysize
+```
+
+
+### 2 - The key itself
+
+Once we get the key's length, things get easier. 
+In this particular challenge, it turns out that the key is 29 characters long. Even though we know the length, we still have 29 characters to guess, each one having 256 possibilities.
+
+How to do that? Well, the answer lies on matrices.
+
+```python
+def find_key(key_length = find_key_length()): 
+    key_blocks = [text[start:start + key_length] for start in range(0, len(text), key_length)]
+    # transpose the 2D matrix
+    key = []
+    single_XOR_blocks = [list(filter(None,i)) for i in zip_longest(*key_blocks)]
+    for block in single_XOR_blocks:
+        key_n = XOR_decode_bytes(block)
+        key.append(key_n)
+
+    ascii_key = ''.join([chr(c) for c in key])
+    return ascii_key.encode()
+```
+
+If our key had exactly three characters - say the key was "RED" - then each first character of each chunk would be XORed against "R", the second against "E" and so on.
+So, if we joined each nth character of each chunk, the result would be a list of characters encrypted with a single byte XOR cipher, whose key is the nth character of our repeating key!
+
+Oof, that's too much. Let's see it in detail:
+![cute](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/putpgy2fh4t59m8syaa7.png)
+
+The operation of creating an array joining every nth element of each chunk is basically transposing a matrix. 
+To finally discover the key, then, we just need to apply the function that finds the key for a single-byte XOR ciphertext in each of the lines of our new generated matrix.
+And now, we have our deciphered plaintext! 
+![result](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/ekoposymtd36shxw14z6.png)
+
+You can see the full code for this post [here](https://github.com/wrongbyte/study-stuff/blob/main/cryptopals/set1/6_break_repeatingXOR.py).
+ 
