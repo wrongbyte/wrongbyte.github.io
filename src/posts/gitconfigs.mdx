@@ -1,0 +1,69 @@
+---
+
+title: "How git stores your configs"
+description: "Have you ever wondered what's inside the .git directory?"
+date: 17-06-2022
+
+---
+
+
+### How commits work?
+A commit contains information related not only to changes in files, but also to the committers in general. Github, for example, uses emails to link committers to their respective accounts in the platform.
+
+Therefore, working with git configs means directly changing the information associated with your commits.
+
+### Viewing your configs
+
+If you have ever had to change or view the name or email displayed in your commits, you probably know the `git config user.name` command, or its variation `git config user.email`. These commands are useful to check the information associated with your commits.
+
+But how git stores these configs _under the hood?_
+
+## Local and global configs
+Git stores configs in two different ways: globally or locally. Just like npm modules, the difference is where the files will be stored - inside of your current directory or in a system directory, being accessible from your whole system. **This differentiation is useful when, for example, working with multiple git accounts on the same computer.** You will be able to configure which account you will be using for each repository.
+
+### Locally: the `.git` directory
+Every time you start a git repository, what you are essentially doing is creating a .git directory inside it. You can open this file in VSCode by navigating to /.git (`cd .git`) and typing `code .`
+An empty repository will usually have a .git structure like this:
+![git folder](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/2qdhnudhqws5kofj5zvn.png)
+ 
+Every interactive git change you do in your repository - that opens a text editor, by default Vim on windows - is going to edit git files in this folder. For example, let's say we forgot to use the `-m` flag when committing changes and it triggered a text editor to open:
+![vscode](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/hvkqvast73w8r3uy5a32.png)
+ or, in Vim:
+![vim](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/zgsuxgx2gig9latpeubf.png)
+ 
+ 
+In both cases, what you are doing is editing a file called _COMMIT_EDITMSG_ inside of your .git directory. 
+![commit message](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/4harp6196xtdklqci4x2.png)
+ 
+It also happens when you use the `rebase -i` command; in this case, you create a directory called _rebase-merge_, that contains the file `git-rebase-todo`, which is where you are going to make the changes.
+Git is also able to see if there's an ongoing rebase by checking if this directory exists or not:
+![ongoing rebase](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/say4murd353i9a1tndbd.png)
+
+![git error](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/q045es2apmadl5tqzdif.png)
+ 
+### Okay, but.. What does it have to do with configs?
+All of these stuff happens locally, inside of your repository. Naturally, the config file is also there, in a file named `config` as well.
+
+If you open it, you'll be able to see a file like this:
+![git config](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/jm4o6nvqy5vhfmb2ih2c.png)
+
+These settings include the url of the remote repository, and some information about branches and merges.
+See, for example, what happens if we change the "origin" - the remote url - to something different, by changing its URL:
+`git remote set-url origin google.com`
+![diff settings](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/g252v177etxhszbb2ai3.png)
+
+Now, our remote URL points to `google.com` in the current repository.
+Commands such as `git remote set-url origin` are shortcuts for editing the config file directly in your CLI. But these properties are not the only ones you can change; let's say that we have multiple github accounts and want to set which one we are going to use for commits in a particular repository.
+We can do so by adding, to our config file, the following properties:
+![change user etc](https://dev-to-uploads.s3.amazonaws.com/uploads/articles/f5e94w05wiad7f98umrs.png)
+ 
+**By doing so, we are overriding, for this repository, the _global git configs_.**
+
+_Side note: of course, using two github accounts on the same computer requires some additional steps, such as adding credentials to the Windows Credentials Manager, etc. But for customizing the author of commits, the method described here works._
+
+###Okay, but.. Where are the global git settings stored?
+Even though you want to change the committer's information for a repository, git has some default settings what will be shared with every new file tracked with git in your system. These are the global configs, and you can see them by typing `git config --list --local`. ~~yeah, it also works with the --local flag~~
+Unlike the local configs, the global ones are stored inside of a file called `.gitconfig`, that is inside of your system user directory. The changes applied to this file will have the same effect of setting things in the git CLI with a `--global` flag.
+
+### In conclusion...
+Even though it's not very common to make changes in .git files directly (instead, you are probably going to use git bash), it may be useful to understand a bit of how things work under the hood. After all, git deals with your files by creating also some other files to track information. I encourage you to take a look not only at the `config` file but also at other files and folders inside `.git`, you may find interesting things there!
