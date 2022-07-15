@@ -1,0 +1,40 @@
+---
+
+title: "Cracking a hashed password with hashcat"
+description: "... through a simple example of how this process works"
+date: 16-06-2022
+
+---
+
+
+
+Given a hashed password `$2y$12$Dwt1BZj6pcyc3Dy1FWZ5ieeUznr71EeNkJkUlypTsgbX1H68wsRom`, we have only one hint: **the password has four letters, all lowercase.**
+
+### Let's start: finding the hash type
+There are **a lot** of hashes out there. A good way to start guessing is to look at the hashed pass and try to find some kind of pattern. Here, the key is the first 4 characters of the hash.
+There is a page where you can look at example hashes: https://hashcat.net/wiki/doku.php?id=example_hashes
+**Noticed something?** We are looking for the _bcrypt $2*$, Blowfish (Unix)_. Our `$2y$` matches this pattern. So we are looking for a bcrypt hash. We also can grasp that the hash was generated using a factor of 12 (it is the number that comes after the first four characters).
+
+### Let's crack!
+First, it is important to know how the process works. Hashing is a process essentially different from encryption - you can only do it once. It means that we cannot _really_ recover the plaintext of a hashed password; instead, we can only compare its hash with our guesses. So, it's like hashing several words and seeing which of them matches exaclty our hash. Then, it must be the password.
+We can automatize this process with two tools: `hashcat` and a dictionary of potential passwords. This kind of dictionary is easy to find on internet, so we are going to use [rock you](https://github.com/brannondorsey/naive-hashcat/releases/download/data/rockyou.txt).
+
+Ok, so our dictionary is _very large_ and checking for each password, one by one, would be an expensive operation. But we already know how our password looks like, right? (four letters, all lowercase).
+So, let's filter our dictionary a little bit by creating a file containing all the passwords that match our condition: 
+
+`grep -x -E '[a-z][^0-9]{4}' rockyou.txt > candidates.txt`
+
+Here we are using `grep` along with a regex expression to filter our potential passwords to only four-letters words without digits. The -x flag applies this expression to the whole line (our file contains one password per line), whereas the -E flag is needed because we are using an extended expression (due to the `{4}` part).
+
+Now, we are ready to crack it with hashcat:
+
+`hashcat -a 0 -m 3200 pass.txt candidates.txt --force`
+
+Here, the code 3200 stands for the `bcrypt` hash, and our hashed pass is stored in pass.txt whereas the potential passwords are stored in candidates.txt.
+
+After a few seconds (depending on your computer), we have the result:
+`$2y$12$Dwt1BZj6pcyc3Dy1FWZ5ieeUznr71EeNkJkUlypTsgbX1H68wsRom:bleh`
+
+Where the "bleh" is the password we were looking for.
+
+~~_In sum: use a password manager :)_~~
