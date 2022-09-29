@@ -1,0 +1,121 @@
+---
+
+title: "What are closures?"
+description: "Let's dive deep into scopes, lifetimes, variables and functions"
+date: 29-09-2022
+
+---
+
+The concept of _closure_ is important when it comes to understanding how languages such as Javascript work - and how scopes, lifetimes and references come together and can be combined to provide useful features to programmers.
+
+## Variables and their scopes
+### 1 - Local and global scope
+Every time you use a variable inside a function, this variable needs to be declared somewhere - and this place can be the **local scope** (inside of the function) or the **global scope**.
+Variables declared in the local scope are only accessible inside of their parent function - which means you cannot reference them outside of the function:
+```javascript
+function() {
+  let a = 1;
+  console.log(a); // works
+}    
+console.log(a); // fails
+```
+In the example above, written in JS, we get an `Uncaught ReferenceError: a is not defined`.
+
+However, by declaring `a` as a global variable, we can reference it anywhere in our code:
+```js
+var a = 1;
+function() {
+  console.log(a); // works
+}    
+console.log(a); // works
+```
+
+### 2 - Lifetime of entities
+The behavior above happens because entities (variables, constants, etc) have different **lifetimes** across a program depending on their **scope**. The definition of the "lifetime" of an entity can be thought as the period from its creation (allocating memory for it) to its destruction (deallocating the memory used for this variable).
+
+A **global variable has the same lifetime of the entire program**. **Local variables**, however, **have specific lifetimes**, so they may not be "alive" during the entire program’s lifecycle. 
+Hence, the underlying programming language must provide a way to deal which such cases, such as manual memory management or some kind of garbage collector. Otherwise, one could stumble upon a _dangling reference_ when not careful enough, since deallocated variables cannot be referenced.
+
+This dynamic is important to understand because we'll eventually get into a tricky question:
+
+_What would happen if we wanted to reference a variable outside of its original scope?_
+
+### 3 - Nested functions
+There is a special use case of functions in which we face the question above.
+Let's say we wanted to create a function inside of another function. Let's call them `outer` and `inner`.
+
+```js
+const outer = function() {
+  const inner = function() {
+     console.log("hello");
+  }
+}
+```
+
+Everything declared inside of `inner` has now access to the scope of `outer`. 
+It means that we can declare variables inside of `outer` and then use them inside of `inner`, as it follows:
+
+
+```js
+const outer = function() {
+  const a = 1;
+  const inner = function() {
+    console.log(a);
+  }
+  return inner;
+}
+
+var fnc = outer(); // execute outer to get inner 
+fnc();
+
+```
+
+We can then return `inner` from `outer`. This part is important because it permits `inner` to leave the scope of `outer`.
+After that, we assign the return of outer to a variable `fnc`, which we can execute to get `inner`.
+
+Therefore, we now have all variables of `inner`, declared in `outer`, _closed_ under this function. 
+
+**What we'll seeing here is basically the implementation of _closures_ in Javascript: a function that has access to the additional data from its surrounding scope.**
+
+Therefore, we can define a closure as:
+```
+1 - A function and
+2 - A reference to that function's outer scope
+```
+
+In the example above, our <u>function</u> is `inner` and the <u>outer scope</u> is the scope of `outer`, which has the variable `a`. Without keeping a reference to this surrounding scope, we would not be able to retrieve the value of `a`. Once we have a reference to this surrounding scope, we have a closure.
+
+### Back to scope and lifetimes: what would happen if we didn't have closures?
+There are languages that don't implement closures. 
+C is a good example: in C, you won't have closures as well as native support for nested functions. 
+Using the simplified definition we've seen before, we can say that what's needed to implement closures is a record of the function along with its environment. 
+To do this in C, there would be necessary to use structs, function pointers and a lot of fuzzy code. Furthermore, it would be necessary to have support for nested functions, which C doesn't have by default. Since closures are only meaningful when a function needs to be executed outside of the scope in which it was originally declared, having nested functions is essential for this concept to work.
+A lot of work, huh?
+
+### How Javascript solves it?
+We already learned that JS implements closures and what they are. But how does it work under the hood?
+
+Every function in JavaScript maintains a reference to its outer environment. This reference is used to determine the execution context of the function when it is invoked, and therefore enables the function to "see" variables declared outside of it.
+It creates a kind of _state_ particular to the functions declared in the same _lexical environment_.
+In addition, if we have functions that call other functions that in turn call even more functions, JS creates a chain of references to the outer lexical environments - which is called the _scope chain._ Therefore, closures in Javascript can become quite useful - and we are going to see a few uses for them now.
+
+## Why are closures useful?
+
+If you have ever programmed using an object-oriented language, you will probably know the concept of classes and states.
+Once you use a closure, you are creating the equivalent of a private state associated with a function.
+```js
+function foo() {
+  const secret = Math.trunc(Math.random() * 100)
+  return function inner() {
+    console.log(`The secret number is ${secret}.`)
+  }
+}
+const f = foo() // 
+f()
+```
+
+In the example above, `secret` is not directly accessible from outside `foo`. `foo` then creates a kind of encapsulation similar to what we see in OOP, which is useful in several cases. Furthermore, JavaScript did not have a class syntax until 2015 - making the use of closures an alternative.
+
+Finally, there are several other use cases for closures - such as _currying_, in functional programming, event-oriented programming and so on.
+
+> :bulb: Further reading: [Nested functions, closures and first-class functions](https://gist.github.com/wrongbyte/3b5f0b09706d818e24c5b18c4b2639cb)
