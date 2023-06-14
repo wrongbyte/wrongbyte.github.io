@@ -20,6 +20,7 @@ const Post = (props: PostModel) => {
         <meta name="description" content="my site" />
         <link rel="icon" href="favicon.ico" />
         <link rel="shortcut icon" href="favicon.ico" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content={props.title} />
         <meta property="og:description" content={props.description} />
         <meta
