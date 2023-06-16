@@ -12,6 +12,7 @@ const Home = (postList: { posts: [PostPreview] }) => {
         <meta name="description" content="my site" />
         <link rel="icon" href="favicon.ico" />
         <link rel="shortcut icon" href="favicon.ico" />
+        <meta property="og:type" content="website" />
         <meta property="og:title" content="wrongbyte.github.io" />
         <meta property="og:description" content="my random tech stuff" />
         <meta
