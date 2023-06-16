@@ -99,3 +99,7 @@ body {
 [data-theme='dark'] .pages {
     color: #919191;
 }
+
+p {
+    margin-bottom: 16px;
+}
